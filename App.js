@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen'
 
 import { Navbar } from './src/Navbar'
 import { AddTodo } from './src/AddTodo'
+import { TodoItem } from './src/TodoItem'
 
 // Keeping the splash screen visible while fetching resources
 SplashScreen.preventAutoHideAsync()
@@ -24,13 +25,10 @@ export default function App() {
 
   const [todos, setTodos] = useState([])
 
-  const addTodo = (title) => {
+  const addTodo = (todoItem) => {
     setTodos(prevTodos => [
-      {
-        id: Date.now().toString(),
-        title
-      },
-      ...prevTodos,
+      todoItem,
+      ...prevTodos
     ])
   }
 
@@ -44,15 +42,12 @@ export default function App() {
         />
       </View>
 
-      <View>
-        {
-          todos.map
-            (
-              item =>
-                <Text key={item.id}>{item.title}</Text>
-            )
-        }
-      </View>
+      {todos.map(item =>
+        <TodoItem
+          todoItem={item}
+          key={item.id}
+        />
+      )}
     </View>
   )
 }
