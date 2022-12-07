@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { StyleSheet, View, Text } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 
@@ -23,13 +23,71 @@ export default function App() {
     }
   }, [fontsLoaded])
 
-  const [todos, setTodos] = useState([])
+  const [todos, setTodos] = useState([{
+    id: Date.now().toString(),
+    title: 'Some title',
+    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur perferendis ducimus odit ullam voluptates possimus aut, tempore pariatur corporis ad.',
+    done: false
+  },
+  {
+    id: (Date.now() + 1).toString(),
+    title: 'Some title + 1',
+    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur perferendis.',
+    done: false
+  },
+  {
+    id: (Date.now() + 2).toString(),
+    title: 'Some title + 2',
+    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur perferendis ducimus odit ullam voluptates possimus aut, tempore.',
+    done: false
+  },
+  {
+    id: (Date.now() + 3).toString(),
+    title: 'Some title + 3',
+    text: 'Lorem ipsum dolor sit.',
+    done: false
+  },
+  {
+    id: (Date.now() + 4).toString(),
+    title: 'Some title + 4',
+    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
+    done: false
+  },
+  {
+    id: (Date.now() + 5).toString(),
+    title: 'Some title + 5',
+    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ',
+    done: false
+  },
+  {
+    id: (Date.now() + 6).toString(),
+    title: 'Some title + 6',
+    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur perferendis ducimus odit ullam.',
+    done: false
+  },
+  {
+    id: (Date.now() + 7).toString(),
+    title: 'Some title + 7',
+    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur perferendis ducimus odit ullam voluptates possimus aut.',
+    done: false
+  }])
 
   const addTodo = (todoItem) => {
     setTodos(prevTodos => [
-      todoItem,
-      ...prevTodos
+      ...prevTodos,
+      todoItem
     ])
+  }
+
+  const completeTodo = (id) => {
+    setTodos(prevTodos => prevTodos.map(item => {
+      id === item.id && (item.done = !item.done)
+      return item
+    }))
+  }
+
+  const removeTodo = (id) => {
+    setTodos(prevTodos => prevTodos.filter(item => id !== item.id))
   }
 
   if (!fontsLoaded) return null
@@ -40,14 +98,18 @@ export default function App() {
         <AddTodo
           onSubmit={addTodo}
         />
+
+        {todos.map((item, idx) =>
+          <TodoItem
+            todoItem={item}
+            idx={idx + 1}
+            completeTodo={completeTodo}
+            removeTodo={removeTodo}
+            key={item.id}
+          />
+        )}
       </View>
 
-      {todos.map(item =>
-        <TodoItem
-          todoItem={item}
-          key={item.id}
-        />
-      )}
     </View>
   )
 }

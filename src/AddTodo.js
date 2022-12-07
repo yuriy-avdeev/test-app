@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import reactDom from 'react-dom'
-import { StyleSheet, View, TextInput, Button, Text } from 'react-native'
+import { Keyboard, StyleSheet, View, TextInput, Button, Text, Alert } from 'react-native'
 
 export const AddTodo = ({ onSubmit }) => {
   const [title, setTitle] = useState('')
@@ -9,31 +8,29 @@ export const AddTodo = ({ onSubmit }) => {
   const [titleFocusStyle, setTitleFocusStyle] = useState({})
   const [isTextFocus, setIsTextFocus] = useState(false)
   const [textFocusStyle, setTextFocusStyle] = useState({})
-  const [mistakeMessage, setMistakeMessage] = useState('')
+  const warningText = 'symbols at least should be!'
 
   const inputBlurStyles = {
     backgroundColor: '#fafafa',
-    outlineWidth: 0
+    borderWidth: 0
   }
+
   const inputFocusStyles = {
     backgroundColor: '#fff',
-    outlineWidth: 1,
+    borderWidth: 1
   }
 
-  const warningText = 'symbols at least should be!'
-
   const onPressAdd = () => {
-    if (text.length >= 5 && title.length >= 2) {
+    if (text.trim().length >= 5 && title.trim().length >= 2) {
       onSubmit({
-        id: new Date().toString(),
+        id: Date.now().toString(),
         title,
         text
       })
       setTitle('')
       setText('')
-      setMistakeMessage('')
     } else {
-      setMistakeMessage('Too short value!')
+      Alert.alert('Too short value!')
     }
   }
 
@@ -49,74 +46,75 @@ export const AddTodo = ({ onSubmit }) => {
       : setTextFocusStyle(inputBlurStyles)
   }, [isTextFocus])
 
+
   return (
-    <View>
-      <View style={styles.block}>
-        <View style={styles.inputsBlock}>
-          <View style={{ position: 'relative' }}>
-            <TextInput
-              style={[
-                styles.input,
-                styles.titleInput,
-                titleFocusStyle,
-                { outlineColor: title.length < 2 ? 'red' : 'green' }
-              ]}
-              value={title}
-              placeholder="Todo's title..."
-              placeholderTextColor='#ccc'
-              autoCorrect={false}
-              cursorColor={title.length < 2 ? 'red' : 'green'}
-              onChangeText={(value) => setTitle(value)}
-              onFocus={() => setIsTitleFocus(true)}
-              onBlur={() => setIsTitleFocus(false)}
-            />
-
-            <Text style={styles.warningText}>
+    <View style={styles.block}>
+      <View style={styles.inputsBlock}>
+        <View style={{ position: 'relative' }}>
+          <TextInput
+            style={[
+              styles.input,
+              styles.titleInput,
+              titleFocusStyle,
               {
-                (title.length > 0 && title.length < 2 && !mistakeMessage)
-                  ? `2 ${warningText}`
-                  : (mistakeMessage && title.length < 2)
-                  && mistakeMessage
-              }
-            </Text>
-          </View>
+                borderColor: (title.trim().length > 0 && title.trim().length < 2) ?
+                  'red' : 'green'
+              },
+            ]}
+            value={title}
+            placeholder="Todo's title..."
+            placeholderTextColor='#ccc'
+            autoCorrect={false}
+            cursorColor='#ccc'
+            onChangeText={(value) => setTitle(value)}
+            onFocus={() => setIsTitleFocus(true)}
+            onBlur={() => setIsTitleFocus(false)}
+            onSubmitEditing={Keyboard.dismiss}
+          />
 
-          <View style={{ position: 'relative' }}>
-            <TextInput
-              style={[
-                styles.input,
-                styles.textInput,
-                textFocusStyle,
-                { outlineColor: text.length < 5 ? 'red' : 'green' }
-              ]}
-              value={text}
-              placeholder="Todo's desription..."
-              placeholderTextColor='#ccc'
-              autoCorrect={false}
-              cursorColor={text.length < 5 ? 'red' : 'green'}
-              onChangeText={(value) => setText(value)}
-              onFocus={() => setIsTextFocus(true)}
-              onBlur={() => setIsTextFocus(false)}
-            />
-            <Text style={styles.warningText}>
-              {
-                (text.length > 0 && text.length < 5 && !mistakeMessage)
-                  ? `5 ${warningText}`
-                  : (mistakeMessage && text.length < 5)
-                  && mistakeMessage
-              }
-            </Text>
-          </View>
+          <Text style={styles.warningText}>
+            {(title.trim().length > 0 && title.trim().length < 2) &&
+              `2 ${warningText}`}
+          </Text>
         </View>
 
+        <View style={{ position: 'relative' }}>
+          <TextInput
+            style={[
+              styles.input,
+              styles.textInput,
+              textFocusStyle,
+              {
+                borderColor: (text.trim().length > 0 && text.trim().length < 5) ?
+                  'red' : 'green'
+              }
+            ]}
+            value={text}
+            placeholder="Todo's desription..."
+            placeholderTextColor='#ccc'
+            autoCorrect={false}
+            cursorColor='#ccc'
+            // down - short entry (it differs from first input)
+            onChangeText={setText}
+            onFocus={() => setIsTextFocus(true)}
+            onBlur={() => setIsTextFocus(false)}
+            // called when the text input's submit button is pressed - remove focus
+            onSubmitEditing={Keyboard.dismiss}
+          />
 
-        <Button
-          onPress={onPressAdd}
-          title="add todo"
-          color="deepskyblue"
-          accessibilityLabel="add todo"
-        />
+          <Text style={styles.warningText}>
+            {(text.trim().length > 0 && text.trim().length < 5) &&
+              `5 ${warningText}`}
+          </Text>
+        </View>
       </View>
+
+      <Button
+        onPress={onPressAdd}
+        title="add todo"
+        color="deepskyblue"
+        accessibilityLabel="add todo"
+      />
     </View>
   )
 }
@@ -126,22 +124,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    marginBottom: 20
+    paddingBottom: 20,
+    borderBottomColor: '#eee',
+    borderBottomWidth: 2,
+    marginBottom: 20,
   },
 
   inputsBlock: {
     width: '70%',
     justifyContent: 'space-between',
-    gap: 24,
   },
 
   input: {
-    height: 33,
+    height: 35,
     paddingHorizontal: 5,
     shadowColor: '#000',
     shadowRadius: 2,
     shadowOpacity: 0.3,
-    outlineWidth: 0
+    outlineWidth: 0,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4
   },
 
   titleInput: {
@@ -152,6 +155,7 @@ const styles = StyleSheet.create({
   textInput: {
     fontSize: 13,
     fontFamily: 'Regular',
+    marginTop: 24,
   },
 
   warningText: {
