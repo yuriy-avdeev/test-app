@@ -5,10 +5,6 @@ export const TodoItem = ({ todoItem, idx, completeTodo, removeTodo }) => {
     completeTodo(todoItem.id)
   }
 
-  const remove = () => {
-    removeTodo(todoItem.id)
-  }
-
   const completeButtonStyles = {
     borderColor: todoItem.done ? '#ccc' : 'green',
     backgroundColor: todoItem.done ? '#eee' : 'lightgreen',
@@ -40,7 +36,7 @@ export const TodoItem = ({ todoItem, idx, completeTodo, removeTodo }) => {
       </Pressable>
 
       <Pressable
-        onPress={remove}
+        onLongPress={() => removeTodo(todoItem.id)}
         style={[styles.button, styles.buttonRemove]}
       >
         <Text style={[styles.buttonText, { color: 'red' }]}>X</Text>

@@ -1,11 +1,13 @@
 import { useCallback, useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import FontAwesome from "@expo/vector-icons/FontAwesome"
+import { StyleSheet, View, SafeAreaView, FlatList, StatusBar, Pressable, Text } from 'react-native'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 
 import { Navbar } from './src/Navbar'
 import { AddTodo } from './src/AddTodo'
 import { TodoItem } from './src/TodoItem'
+import { ImagePickerEx } from './src/ImagePickerEx.js'
 
 // Keeping the splash screen visible while fetching resources
 SplashScreen.preventAutoHideAsync()
@@ -33,42 +35,6 @@ export default function App() {
     id: (Date.now() + 1).toString(),
     title: 'Some title + 1',
     text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur perferendis.',
-    done: false
-  },
-  {
-    id: (Date.now() + 2).toString(),
-    title: 'Some title + 2',
-    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur perferendis ducimus odit ullam voluptates possimus aut, tempore.',
-    done: false
-  },
-  {
-    id: (Date.now() + 3).toString(),
-    title: 'Some title + 3',
-    text: 'Lorem ipsum dolor sit.',
-    done: false
-  },
-  {
-    id: (Date.now() + 4).toString(),
-    title: 'Some title + 4',
-    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
-    done: false
-  },
-  {
-    id: (Date.now() + 5).toString(),
-    title: 'Some title + 5',
-    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. ',
-    done: false
-  },
-  {
-    id: (Date.now() + 6).toString(),
-    title: 'Some title + 6',
-    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur perferendis ducimus odit ullam.',
-    done: false
-  },
-  {
-    id: (Date.now() + 7).toString(),
-    title: 'Some title + 7',
-    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur perferendis ducimus odit ullam voluptates possimus aut.',
     done: false
   }])
 
@@ -99,17 +65,38 @@ export default function App() {
           onSubmit={addTodo}
         />
 
-        {todos.map((item, idx) =>
-          <TodoItem
-            todoItem={item}
-            idx={idx + 1}
-            completeTodo={completeTodo}
-            removeTodo={removeTodo}
-            key={item.id}
+        <SafeAreaView style={{
+          flex: 1,
+          marginTop: StatusBar.currentHeight || 0,
+        }}>
+          <FlatList
+            data={todos}
+            renderItem={({ item, index }) =>
+              <TodoItem
+                todoItem={item}
+                idx={index + 1}
+                completeTodo={completeTodo}
+                removeTodo={removeTodo}
+              />}
+            keyExtractor={item => item.id}
           />
-        )}
+        </SafeAreaView>
       </View>
 
+      <Pressable
+        style={[styles.button, { backgroundColor: "#fff" }]}
+        onPress={() => alert('You pressed a button.')}
+      >
+        <FontAwesome
+          name="home"
+          size={28}
+          color="red"
+          style={styles.buttonIcon}
+        />
+        <Text style={[styles.buttonLabel, { color: "#25292e" }]}>BUTTON</Text>
+      </Pressable>
+
+      <ImagePickerEx />
     </View>
   )
 }
@@ -118,5 +105,23 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 20,
     paddingVertical: 15,
+  },
+
+  button: {
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginRight: 22,
+    marginBottom: 20,
+    flexDirection: 'row',
+  },
+
+  buttonIcon: {
+    paddingRight: 8,
+  },
+
+  buttonLabel: {
+    color: '#fff',
+    fontSize: 16,
   },
 })
